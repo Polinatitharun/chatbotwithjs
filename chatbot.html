@@ -1,0 +1,253 @@
+User
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chat bot</title>
+    <link rel="stylesheet" href="chatbot.css">
+  
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About us</a></li>
+            <li><a href="#">contact us</a></li>
+        </ul>
+</nav>
+    <div>
+        <h1>DIGITA</h1><br>
+        <p>Hello, this is digita a simple on training chat bot it is created by  THARUN POLINATI</p>
+    </div>
+    <button class="btnsug" onclick="suggestions()">suggestions</button>
+    <div class="box">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="userInput" placeholder="Type your message..." required>
+                        <br>
+                        <button type="button" onclick="sendMessage()" class="btn">Send</button>
+                        <button class="btn" id="btn1" onclick="runSpeechRecognition()">speak</button>
+                        <div id="action"></div>
+                    </div>
+                   
+                </div>
+            </div>
+           
+            <div class="row">
+                <div class="col">
+                    <div id="chatArea" style="height: 200px; overflow-y: scroll;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <center> <button class="btn" id="btn2" onclick="listening()">listen output</button></center>
+<br>
+<p>all rights reserved</p>
+    
+    <script>
+         
+         function runSpeechRecognition() {
+    var output = document.getElementById("action");
+    var userInput = document.getElementById("userInput");
+
+    var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+
+    recognition.onstart = function() {
+        output.innerHTML = "<small>Listening, please speak...</small>";
+    };
+    
+    recognition.onspeechend = function() {
+        output.innerHTML = "<small>Stopped listening, hope you are done...</small>";
+        recognition.stop();
+    }
+
+    recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        var confidence = event.results[0][0].confidence;
+        userInput.value = transcript;
+        output.innerHTML = "<b>Text:</b> " + transcript + "<br/>";
+
+        // Automatically send message after getting transcript
+        sendMessage();
+    };
+
+    recognition.start();
+}
+
+       function listening() {
+    const synth = window.speechSynthesis;
+    var chatArea = document.getElementById('chatArea');
+    var latestBotMessage = chatArea.lastChild.textContent; 
+
+    const text = latestBotMessage;
+
+    if (text !== '') {
+        const utterThis = new SpeechSynthesisUtterance(text);
+        synth.speak(utterThis);
+    } else {
+        alert('No bot response found in the chat area!');
+    }
+}
+    
+        function sendMessage() {
+            var userInput = document.getElementById('userInput').value;
+            var chatArea = document.getElementById('chatArea');
+            var lwr = userInput.toLowerCase();
+            var arr = lwr.split(' ');
+    
+            var userMessage = document.createElement('p');
+            userMessage.innerText = "You: " + userInput;
+            chatArea.appendChild(userMessage);
+    
+            var botResponse = getBotResponse(userInput, arr);
+            if (botResponse.startsWith("Image:")) {
+                var imageUrl = botResponse.substring(6);
+                var image = document.createElement('img');
+                image.src = imageUrl;
+                image.style.maxWidth = "100%";
+                chatArea.appendChild(image);
+            } else {
+                var botMessage = document.createElement('p');
+                botMessage.innerText = "Bot: " + botResponse;
+                chatArea.appendChild(botMessage);
+            }
+    
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+    
+        function getBotResponse(userInput, arr) {
+    var lowercaseInput = userInput.toLowerCase();
+
+    if (lowercaseInput === "hello") {
+        return "Hello there!";
+    } else if (arr.includes("how are you") || arr.includes("how you are doing") || arr.includes("whats up")) {
+        return "I'm just a bot, but I'm doing well. Thanks for asking!";
+    } else if (lowercaseInput === "bye") {
+        return "Goodbye!";
+    } else if (lowercaseInput === "show flower image") {
+        return "Image:flower.png"; 
+    }
+    // Add more conditions for bot responses here...
+    else if(arr.includes("hi")||arr.includes("hey")||arr.includes("digita")){
+        return "hello how can i help you right now";
+    }
+    else if (lowercaseInput === "time") {
+        var currentTime = new Date().toLocaleTimeString();
+        return "The current time is " + currentTime;
+    } 
+    else if (arr.includes("day") || arr.includes("date") ) {
+        var currentDate = new Date().toDateString();
+        return "The current date is " + currentDate;
+    } 
+    else if(arr.includes("weather")){
+       return "sorry I don't have access to weather reports";
+    }
+    else if(arr.includes("good")||arr.includes("fine")||arr.includes("ok")||arr.includes("thank you")||arr.includes("tq")||arr.includes("lovely")){
+        return "That's great to hear!";
+    }
+    else if (arr.includes("open") && arr.includes("youtube")) {
+        window.open("https://www.youtube.com");
+        return "Opening YouTube...";
+    }
+    else if (arr.includes("open") && arr.includes("facebook")) {
+        window.open("https://www.facebook.com");
+        return "Opening Facebook...";
+    }
+    // Add more conditions for opening specific websites...
+    else if(arr.includes("open")){
+        var domain=arr[1];
+        window.open(`https://www.${domain}.com`);
+        return `Opening ${domain}...`;
+    }
+    else if(arr.includes("say")||arr.includes("something")){
+        return "I'm here to assist you. Feel free to ask.";
+    }
+    else if(arr.includes("joke")||arr.includes("comedy")){
+        return "Why did the math book look sad? Because it had too many problems!";
+    }
+    // Add more conditions for jokes or funny responses...
+    else if(arr.includes("mother")){
+        return "A mother is the epitome of love and sacrifice.";
+    }
+    else if(arr.includes("beulah")){
+        return "Miss Beulah is the principal of Aditya School of Computer Science.";
+    }
+    // Add more conditions for specific individuals...
+    else if(arr.includes("sing")||arr.includes("song")){
+        return "Happy Birthday to you, happy birthday to you, just kidding! I don't know any songs.";
+    }
+    else if(arr.includes("python")||arr.includes("program")){
+        return "a=10 b=20 c=a+b print(c)";
+    }
+    else if(arr.includes('age')||arr.includes('age caluclator')||arr.includes("caluclate my age")){
+        window.location.href='age.html';
+    }
+    // Add more conditions for redirecting to specific pages...
+    else if(arr.includes("ysjagan")||arr.includes("jagan")){
+        return "The worst and dumbest CM in the world.";
+    }
+    // Add more conditions for political figures...
+    else if(arr.includes('open dictionary')||arr.includes('dictionary')||arr.includes("dictionary app")){
+        window.location.href='dictionary.html';
+    }
+    else if(arr.includes("recipe")){
+        return "I'm sorry, I don't have any recipes at the moment.";
+    }
+    else if(arr.includes("exercise")||arr.includes("workout")){
+        return "Exercise is important for maintaining a healthy lifestyle.";
+    }
+    else if(arr.includes("translate")){
+        return "I'm sorry, I can't provide translation services at the moment.";
+    }
+    else if(arr.includes("movie")||arr.includes("film")){
+        return "I'm sorry, I don't have any movie recommendations right now.";
+    }
+    else if(arr.includes("book")){
+        return "Reading is a great way to expand your knowledge and imagination.";
+    }
+    // Additional else if blocks for handling different prompts
+    else if(arr.includes("animal")){
+        return "Did you know that the tongue of a blue whale is so large that fifty people could stand on it?";
+    }
+    else if(arr.includes("sport")){
+        return "Soccer is the most popular sport in the world, with over 4 billion fans!";
+    }
+    else if(arr.includes("technology")||arr.includes("tech")){
+        return "The first computer virus was created in 1983 and was called the 'Elk Cloner'.";
+    }
+    else if(arr.includes("travel")||arr.includes("destination")){
+        return "The Great Barrier Reef in Australia is the largest living structure on Earth, visible even from outer space!";
+    }
+    else if(arr.includes("food")||arr.includes("cuisine")){
+        return "Italian cuisine is one of the most popular in the world, known for its pasta, pizza, and gelato.";
+    }
+    else if(arr.includes('bts')||arr.includes("korea")){
+        return "best kpop ";
+    }
+    else if (lowercaseInput === "show jk image") {
+        return "Image:bts.png"; 
+    }
+    else if(arr.includes("study")||arr.includes("e-learn")||arr.includes("python")||arr.includes("java")||arr.includes("dbms")||arr.includes("problem solving")){
+        window.location.href='onlinelearning.html';
+        return "ok learn any course from our e-learn platform";
+    }
+    // Add more conditions for opening dictionary or related resources...
+    else {
+        return "I'm sorry, I don't understand. I'm still learning.";
+    }
+}
+
+        
+          
+     function suggestions(){
+        alert("1.ask for open any domain like open youtube or open watsapp\n2.ask to sing a song\n 3.ask to show flower image\n 4.Ask to show dictionary app\n 5.Ask to show age caluclator\n6.Ask to show E-learn platform")
+     }       
+    
+    </script>
+    
+</body>
+</html>
